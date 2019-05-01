@@ -4,7 +4,7 @@ import os
 from numpy import inf
 
 ROLLS = [ 20171086 ]
-MAX_DISPLACEMENT = 5
+MAX_DISPLACEMENT = 16
 
 # # Read the image. The first command line argument is the image
 # # image = cv2.imread('Data/sample_test/slides/ppt1.jpg')
@@ -36,10 +36,10 @@ def eval(frame, slide):
     good = []
     ols = 0
     for m,n in matches:
-        if m.distance < 0.55 * n.distance:
+        if m.distance < 0.75 * n.distance:
             temp = points_1[m.queryIdx] - points_2[m.trainIdx]
-            print(points_1[m.queryIdx] , points_2[m.trainIdx])
-            if temp[0] < MAX_DISPLACEMENT and temp[1] < MAX_DISPLACEMENT:
+            # print(points_1[m.queryIdx] , points_2[m.trainIdx])
+            if abs(temp[0]) < MAX_DISPLACEMENT and abs(temp[1]) < MAX_DISPLACEMENT:
                 count += 1
                 good.append([m])
                 temp2 = (temp[0]**2 + temp[1]**2)
@@ -49,9 +49,9 @@ def eval(frame, slide):
     img3 = cv2.drawMatchesKnn(frame,kp1,slide,kp2,good,None,flags=2)
     plt.imshow(img3),plt.show()
     print(count)
-    print(ols)
-    evaluation = -inf if not count else ols/count * -1
-    print(evaluation)
+    # print(ols)
+    # evaluation = -inf if not count else ols/count * -1
+    # print(evaluation)
     return count
 
 def matcher(frame, slides):

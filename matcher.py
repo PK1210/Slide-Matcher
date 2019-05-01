@@ -4,6 +4,7 @@ import os
 from numpy import inf
 
 ROLLS = [ 20171086 ]
+MAX_DISPLACEMENT = 16
 
 # # Read the image. The first command line argument is the image
 # # image = cv2.imread('Data/sample_test/slides/ppt1.jpg')
@@ -32,30 +33,24 @@ def eval(frame, slide):
 
     # Apply ratio test
     count = 0
-    # good = []
-    ols = 0
     for m,n in matches:
         if m.distance < 0.75 * n.distance:
-            count += 1
-            # good.append([m])
             temp = points_1[m.queryIdx] - points_2[m.trainIdx]
-            temp2 = (temp[0]**2 + temp[1]**2)
-            ols += temp2
+            if abs(temp[0]) < MAX_DISPLACEMENT and abs(temp[1]) < MAX_DISPLACEMENT:
+                count += 1
 
     # cv2.drawMatchesKnn expects list of lists as matches.
     # img3 = cv2.drawMatchesKnn(frame,kp1,slide,kp2,good,None,flags=2)
     # plt.imshow(img3),plt.show()
     # print(count)
-    # print(ols)
-    evaluation = ols/count * -1
-    print(evaluation)
-    return evaluation
+    return count
 
 def matcher(frame, slides):
     n = len(slides)
     max_val = -inf
     slide = 'a'
     for i in range(n):
+        print(slides[i][1])
         val = eval(frame,slides[i][0])
         if val > max_val:
             slide = slides[i][1]
@@ -66,7 +61,7 @@ def matcher(frame, slides):
 def iter(PATH_FRAME, slides):
     files = os.listdir(PATH_FRAME)
     frames = []
-    print(files)
+    # print(files)
     for file in files:
         frame = cv2.imread(PATH_FRAME + file)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -79,8 +74,8 @@ def init():
     #     print("Please enter the path to slide and path to frames as arguments")
     #     exit(1)
     # PATH_SLIDE = argv[1]
-    PATH_SLIDE = 'Testbench/Slides_1/'
-    PATH_FRAME = 'Testbench/Frames_1/'
+    PATH_SLIDE = 'Testbench/Slides/'
+    PATH_FRAME = 'Testbench/Frames/'
     slides = readSlides(PATH_SLIDE)
     mapping = iter(PATH_FRAME, slides)
     formatAnswer(mapping)
