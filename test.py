@@ -42,8 +42,6 @@ def eval(frame, slide):
             if abs(temp[0]) < MAX_DISPLACEMENT and abs(temp[1]) < MAX_DISPLACEMENT:
                 count += 1
                 good.append([m])
-                temp2 = (temp[0]**2 + temp[1]**2)
-                ols += temp2
 
     # cv2.drawMatchesKnn expects list of lists as matches.
     img3 = cv2.drawMatchesKnn(frame,kp1,slide,kp2,good,None,flags=2)
